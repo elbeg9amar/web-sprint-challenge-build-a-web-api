@@ -1,7 +1,10 @@
 const e = require('express');
 const express = require('express');
 const router = express.Router();
-const check = require('../middleware/actionmid')
+const {
+        validataActionId, 
+        validateNewAction
+    } = require('../middleware/actionmid')
 
 const actions = require('../data/helpers/actionModel.js')
 
@@ -17,7 +20,7 @@ router.get('/', (req,res) => {
         });
 });
 
-router.get('/:id',check.validataActionId, (req, res) => {
+router.get('/:id',validataActionId, (req, res) => {
     actions.get(req.params.id)
         .then(action => {
             res.status(200).json(action)
@@ -28,7 +31,7 @@ router.get('/:id',check.validataActionId, (req, res) => {
         });
 });
 
-router.put('/:id',check.validataActionId, (req,res) => {
+router.put('/:id',validataActionId, (req,res) => {
     const id = req.params.id;
     const body = req.body;
     actions.update(id, body)
@@ -41,7 +44,7 @@ router.put('/:id',check.validataActionId, (req,res) => {
         });
 });
 
-router.delete('/:id', check.validataActionId, (req, res) => {
+router.delete('/:id', validataActionId, (req, res) => {
     actions.remove(req.params.id)
         .then(action => {
             res.status(200).json({message:"action deleted"})
@@ -52,7 +55,7 @@ router.delete('/:id', check.validataActionId, (req, res) => {
         });
 });
 
-router.post('/',check.validateNewAction, (req,res) => {
+router.post('/',validateNewAction, (req,res) => {
     const newAction = req.body;
     actions.insert(newAction)
         .then(action => {
