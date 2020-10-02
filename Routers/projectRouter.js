@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const projects = require('../data/helpers/projectModel');
+const {validataProjectId, validataNewProject} = require('../middleware/projectmid')
 
 router.get('/', (req,res) => {
     projects.get()
@@ -71,32 +72,5 @@ router.put('/:id', validataProjectId,(req,res) => {
             res.status(500).json({message: "error occured while updating existing project"})
         })
 })
-
-function validataProjectId(req,res,next) {
-    const id = Number(req.params.id)
-    projects.get()
-        .then(projects => {
-            if(projects.find(p => p.id === id)){
-                next()
-            }else {
-                res.status(404).json({message: "invalid project id"})
-            }
-        })
-        .catch(err => {
-            console.log(err)
-            res.status(500).json({error: "error occured while validating project's id"})
-        });
-};
-
-function validataNewProject(req,res,next){
-    const body = req.body;
-    if(Object.keys(body).length === 0){
-        res.status(400).json({message: "missing project data"})
-    }else if (!body.description || !body.name){
-        res.status(400).json({error:"required fields are missing"})
-    }else {
-        next()
-    };
-};
 
 module.exports = router;

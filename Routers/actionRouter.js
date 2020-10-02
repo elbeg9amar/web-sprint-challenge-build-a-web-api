@@ -1,6 +1,7 @@
 const e = require('express');
 const express = require('express');
 const router = express.Router();
+const check = require('../middleware/actionmid')
 
 const actions = require('../data/helpers/actionModel.js')
 
@@ -16,7 +17,7 @@ router.get('/', (req,res) => {
         });
 });
 
-router.get('/:id',validataActionId, (req, res) => {
+router.get('/:id',check.validataActionId, (req, res) => {
     actions.get(req.params.id)
         .then(action => {
             res.status(200).json(action)
@@ -27,7 +28,7 @@ router.get('/:id',validataActionId, (req, res) => {
         });
 });
 
-router.put('/:id', validataActionId, (req,res) => {
+router.put('/:id',check.validataActionId, (req,res) => {
     const id = req.params.id;
     const body = req.body;
     actions.update(id, body)
@@ -40,7 +41,7 @@ router.put('/:id', validataActionId, (req,res) => {
         });
 });
 
-router.delete('/:id', validataActionId, (req, res) => {
+router.delete('/:id', check.validataActionId, (req, res) => {
     actions.remove(req.params.id)
         .then(action => {
             res.status(200).json({message:"action deleted"})
@@ -51,7 +52,7 @@ router.delete('/:id', validataActionId, (req, res) => {
         });
 });
 
-router.post('/',validateNewAction, (req,res) => {
+router.post('/',check.validateNewAction, (req,res) => {
     const newAction = req.body;
     actions.insert(newAction)
         .then(action => {
@@ -60,36 +61,8 @@ router.post('/',validateNewAction, (req,res) => {
         .catch(err => {
             console.log(err)
             res.status(500).json({error:"error occured while posting new action"})
-        })
-})
-
-
-function validataActionId(req,res,next) {
-    const id = Number(req.params.id)
-    actions.get()
-        .then(actions => {
-            if(actions.find(act => act.id === id)){
-                next()
-            }else {
-                res.status(404).json({message: "invalid action id"})
-            }
-        })
-        .catch(err => {
-            console.log(err)
-            res.status(500).json({error: "error occured while validating action's id"})
         });
-};
+});
 
-function validateNewAction(req,res,next) {
-    const body =req.body;
-    console.log(body)
-    if(Object.keys(body).length === 0){
-        res.status(400).json({message: "missing action data"})
-    }else if (!body.description || !body.notes ||!body.project_id){
-        res.status(400).json({error:"required fields are missing"})
-    }else {
-        next()
-    }
-}
 
 module.exports = router;
