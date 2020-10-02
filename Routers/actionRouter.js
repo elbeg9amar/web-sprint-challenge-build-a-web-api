@@ -52,7 +52,7 @@ router.delete('/:id', validataActionId, (req, res) => {
 });
 
 router.post('/',validateNewAction, (req,res) => {
-    const newAction = req.body; 
+    const newAction = req.body;
     actions.insert(newAction)
         .then(action => {
             res.status(200).json(action)
@@ -85,7 +85,7 @@ function validateNewAction(req,res,next) {
     console.log(body)
     if(Object.keys(body).length === 0){
         res.status(400).json({message: "missing action data"})
-    }else if (!body.description || !body.notes || !body.project_id){
+    }else if (!body.description || !body.notes ||!body.project_id){
         res.status(400).json({error:"required fields are missing"})
     }else {
         next()
